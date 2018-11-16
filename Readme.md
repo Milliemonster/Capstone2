@@ -30,10 +30,10 @@ For the initial model, three species of beetles were selected based on the prese
 ### Cleaning
 I wanted to give my initial mode "easy" images to work with. I wrote a script that displayed batches of images and recorded which indices I wanted to keep and subsequently copied them to a seperate folder. This way I was able to quickly hand sort large amounts of data. I selected images with only a single subject and also eliminated those where the subject was relatively small.
 
-The balance of the clean dataset was:
-Japanese beetles - 31%
-Ladybug - 33%
-Cucumber beetle - 36%
+The balance of the clean dataset was:  
+Japanese beetles - 31%  
+Ladybug - 33%  
+Cucumber beetle - 36%  
 
 ![img](images/readme/image_selection.png)
 
@@ -47,41 +47,43 @@ The first two principle components were plotted to look for clustering, but no c
 
 Random Forest Classifier, Adaboost Classifier, Naive Bayes Classifier all optimized with Grid Search CV using 5 fold cross validatoin and balanced accuracy score (BAC) as the scoring metric (average recall for each class).
 
-Random Forest Classifier - BAC = 0.57
-Ada Boost Classififer - BAC = 0.45
-Gaussian Naive Bayes - BAC = 0.43
+Random Forest Classifier - BAC = 0.57  
+Ada Boost Classififer - BAC = 0.45  
+Gaussian Naive Bayes - BAC = 0.43  
 
 ### Model - basic CNN
 The initial model was a simple CNN based loosely on the architecture of the VGG-16 neural net. Categorical crossentropy was used as a loss function.
 
-Convolution + relu - 4x4, 32 filters
-Convolution + relu - 4x4, 32 filters
-Max Pooling - 2x2
-Dropout 0.3
-Convolution + relu- 3x3, 32 filters
-Convolution + relu- 1x5, 32 filters
-Convolution + relu- 5x1, 32 filters
-Max Pooling - 2x2
-Dropout 0.3
-Flatten
-Dense layer + relu
-Dropout 0.3
-Dense layer + softmax
+Convolution + relu - 4x4, 32 filters  
+Convolution + relu - 4x4, 32 filters  
+Max Pooling - 2x2  
+Dropout 0.3  
+Convolution + relu- 3x3, 32 filters  
+Convolution + relu- 1x5, 32 filters  
+Convolution + relu- 5x1, 32 filters  
+Max Pooling - 2x2  
+Dropout 0.3  
+Flatten  
+Dense layer + relu  
+Dropout 0.3  
+Dense layer + softmax  
 
 Images were downsampled to 100 x 100 x 3 and preprocessed using the Xception preprocessor. Images were split into a train (487 images), test (138 images) and holdout set (65 images). Training data was augmented using shear, zoom, width shift and height shift of 0.2 and horizontal and vertical flips as available transformations.   
 
 ### Results
 
-With the best set of weights, the balanced accuracy score on the holdout images was 95%.
+The final model was run for 10 epochs using 6400 generated images in each epoch. With the best set of weights, the balanced accuracy score on the holdout images was 95%.
 Taking a look at places where the model missed, I believe it's most likely that this model is basing predictions on color and large features such as spots. This would make sense given that the model isn't very deep and the images needed to be heavily downsampled.
 
 Possible misses based on color:
+
 ![img](images/readme/missed3.png)
 ![img](images/readme/missed4.png)
 ![img](images/readme/missed5.png)
 ![img](images/readme/test3.png)
 
 Not sure why it missed these:
+
 ![img](images/readme/test2.png)
 ![img](images/readme/missed1.png)
 
