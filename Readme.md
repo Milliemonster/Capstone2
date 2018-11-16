@@ -6,7 +6,7 @@ Japanese beetles are an invasive species which first came to Colorado in the ear
 
 In 2017 and 2018, the Denver Museum of Nature and Science asked Coloradans to help with a beetle tracking project by submitting samples to the museum. Even with the overhead involved in submitting physical samples, 215 people contributed over 2,000 samples, producing the map below.<sup>1</sup>
 
-![img](images/readme/beetle_distribution.png)
+![img](images/readme/Beetle_distribution.png)
 Japanese Beetle distribution in Colorado <sup>1</sup>
 
 This project attempts to streamline this mapping process by allowing users to submit a photo of a specimen and then categorizing it as a Japanese Beetle or one of the other species of beetles endemic to Colorado. This point location data could used with other environmental data to create a species distribution model (often done using Random Forest Classifier).  
