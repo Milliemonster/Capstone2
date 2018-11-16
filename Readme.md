@@ -18,13 +18,13 @@ Species distribution mapping <sup>3</sup>
 For the initial model, three species of beetles were selected based on the presence of distinguishing features and availability of photos. Images were downloaded from google images and Flickr
 
 ##### Cucumber beetle: 545 images
-![img](images/readme/3. cucumberbeetle-spotted.jpg)
+![img](images/readme/cucumberbeetle-spotted.jpg)
 
 ##### Japanese beetle: 787 images
-![img](images/readme/13. japanese-beetle.jpg)
+![img](images/readme/japanese-beetle.jpg)
 
 ##### Ladybug: 604 images
-![img](images/readme/1. ladybug-leaf.ngsversion.1396530840848.jpg)
+![img](images/readme/ladybug-leaf.ngsversion.1396530840848.jpg)
 
 
 ### Cleaning
