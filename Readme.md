@@ -4,6 +4,8 @@
 
 Japanese beetles are an invasive species which first came to Colorado in the early 1990s and are a pest to landscaping and some types of native plants. Interestingly, Colorado's semi-arid climate isn't naturally hospitable to this species. However, human activity such as watering lawns and planting food for them to eat (i.e. lawns and gardens) had enabled them to live in the state. The town of Palisade was able to eradicate the beetles several years ago by letting lawns dry out and pesticide application. Beetles spread on their own by about 1-5 miles a year and can also be transferred further by nursery plants. Because this pest can cause significant economic damage, tracking and preventing the spread is important.<sup>1,2</sup>
 
+![img](images/readme/japanese-beetle2.jpg)
+
 In 2017 and 2018, the Denver Museum of Nature and Science asked Coloradans to help with a beetle tracking project by submitting samples to the museum. Even with the overhead involved in submitting physical samples, 215 people contributed over 2,000 samples, producing the map below.<sup>1</sup>
 
 ![img](images/readme/Beetle_distribution.png)
@@ -70,9 +72,10 @@ Dense layer + softmax
 
 Images were downsampled to 100 x 100 x 3 and preprocessed using the Xception preprocessor. Images were split into a train (487 images), test (138 images) and holdout set (65 images). Training data was augmented using shear, zoom, width shift and height shift of 0.2 and horizontal and vertical flips as available transformations.   
 
-### Results
+### Results and Conclusions
 
-The final model was run for 10 epochs using 6400 generated images in each epoch. With the best set of weights, the balanced accuracy score on the holdout images was 95%.
+The final model was run for 10 epochs using 6400 generated images in each epoch. With the best set of weights, the balanced accuracy score on the validation set was 96% and on the holdout images was 95%.
+
 Taking a look at places where the model missed, I believe it's most likely that this model is basing predictions on color and large features such as spots. This would make sense given that the model isn't very deep and the images needed to be heavily downsampled.
 
 Possible misses based on color:
