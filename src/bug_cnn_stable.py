@@ -1,7 +1,6 @@
 import numpy as np
 np.random.seed(42)
 import pandas as pd
-
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Activation, Flatten
 from keras.layers import Convolution2D, MaxPooling2D
@@ -15,14 +14,20 @@ from keras.callbacks import ModelCheckpoint, TensorBoard
 from sklearn.utils import class_weight
 from sklearn.metrics import balanced_accuracy_score
 import matplotlib.pyplot as plt
+from plot_confusion_matrix import plot_confusion_matrix
+from sklearn.metrics import confusion_matrix
+matplotlib.use('agg')
 
-def create_model():
-    nb_classes = 3
-    img_rows, img_cols = 100, 100
+def create_model(nb_classes, img_rows, img_cols, img_layers):
+    '''assembles CNN model layers
+    inputs: number of classes, image size (rows, cols, layers)
+    outputs: model
+    '''
+
     nb_filters = 24
     pool_size = (2, 2)
     kernel_size = (4, 4)
-    input_shape = (100, 100, 3)
+    input_shape = (img_rows, img_cols, img_layers)
 
     model = Sequential()
 
@@ -57,7 +62,13 @@ def create_model():
 
     return model
 
-def generate_data(train_directory, validation_directory, test_directory):
+def generate_data(train_directory, validation_directory, test_directory, img_rows, img_cols, mode = 'rgb'):
+    '''creates data generators for train, validation and test data
+        inputs: paths to image data. Folders should be named with the target.
+                image size (row, cols) and color mode
+        outputs: three data generators.
+        '''
+
     train_datagen = ImageDataGenerator(
         preprocessing_function=preprocess_input,
         shear_range=0.2,
@@ -79,8 +90,8 @@ def generate_data(train_directory, validation_directory, test_directory):
     train_generator = train_datagen.flow_from_directory(
         directory=train_directory,
         #save_to_dir = "japanese_beetle/train",
-        target_size=(100, 100),
-        color_mode="rgb",
+        target_size=(img_rows, img_cols),
+        color_mode=mode,
         batch_size=16,
         class_mode="categorical",
         shuffle=True,
@@ -89,8 +100,8 @@ def generate_data(train_directory, validation_directory, test_directory):
 
     validation_generator = validation_datagen.flow_from_directory(
         directory=validation_directory,
-        target_size=(100, 100),
-        color_mode="rgb",
+        target_size=(img_rows, img_cols),
+        color_mode=mode,
         batch_size=138,
         class_mode="categorical",
         shuffle=False,
@@ -99,8 +110,8 @@ def generate_data(train_directory, validation_directory, test_directory):
 
     test_generator = test_datagen.flow_from_directory(
         directory=test_directory,
-        target_size=(100, 100),
-        color_mode="rgb",
+        target_size=(img_rows, img_cols),
+        color_mode=mode,
         batch_size=65,
         class_mode="categorical",
         shuffle=False,
@@ -110,6 +121,12 @@ def generate_data(train_directory, validation_directory, test_directory):
     return train_generator, test_generator, validation_generator
 
 def make_analysis(generator):
+    '''
+    Computes accuracy of model and displays labeled images for incorrect guesses.
+    inputs: test data generator
+    outputs: balanced accuracy score
+    '''
+
     test_X = generator[0][0]
     test_y = generator.classes
 
@@ -122,7 +139,6 @@ def make_analysis(generator):
     classes = {0:'cucumber beetle' , 1: 'Japanese beetle', 2: 'ladybug'}
 
     score = balanced_accuracy_score(test_y, predicted_y)
-    print(f'balanced accuracy score is {score}')
 
     wrong_indices = []
 
@@ -131,41 +147,69 @@ def make_analysis(generator):
             wrong_indices.append(i)
 
     for index in wrong_indices:
-        plt.imshow(test_X[index])
+        plt.imshow((test_X[index]/2+0.5))
         plt.text(0.05, 0.95, f'I thought this was a {classes[predicted_y[index]]} \n but it was a {classes[test_y[index]]}', fontsize=14,
         verticalalignment='top', bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
         plt.show()
 
+    return score
+
+def show_confusion(generator):
+    test_X = generator[0][0]
+    test_y = generator.classes
+    predicted_y = model.predict_classes(test_X)
+
+    class_names = ['cucumber beetle' , 'Japanese beetle',  'ladybug']
+
+    # Compute confusion matrix
+    cnf_matrix = confusion_matrix(test_y, predicted_y)
+    np.set_printoptions(precision=2)
+
+    print(cnf_matrix)
+    # Plot non-normalized confusion matrix
+    plt.figure()
+    plot_confusion_matrix(cnf_matrix, classes=class_names,
+                          title='Confusion matrix, without normalization')
+
+    # Plot normalized confusion matrix
+    plt.figure()
+    plot_confusion_matrix(cnf_matrix, classes=class_names, normalize=True,
+                          title='Normalized confusion matrix')
+
+    plt.show()
 
 if __name__ == '__main__':
     train_directory = "../images/select/train"
     test_directory = "../images/select/holdout"
     validation_directory = "../images/select/validation"
 
-    model = create_model()
+    model = create_model(3, 100, 100, 3)
 
     model.compile(loss='categorical_crossentropy',
                   optimizer='adadelta',
                   metrics=['accuracy'])
 
-
-    checkpointer = ModelCheckpoint(filepath='./tmp/weights.hdf5', verbose=1, save_best_only=True)
+    checkpointer = ModelCheckpoint(filepath='./tmp/new_weights.hdf5', verbose=1, save_best_only=True)
 
     tensorboard = TensorBoard(
                 log_dir='logs/', histogram_freq=0, batch_size=50, write_graph=True, embeddings_freq=0)
 
-    train_generator, test_generator, validation_generator = generate_data(train_directory, validation_directory, test_directory)
+    train_generator, test_generator, validation_generator = generate_data(train_directory, validation_directory, test_directory, 100, 100)
 
     load = input("Load saved weights? (y/n) ")
 
     if load.lower() == 'y':
-        model.load_weights("./tmp/stable.hdf5")
+        model.load_weights("./tmp/stable11.hdf5")
         print("weights loaded")
     elif load.lower() == 'n':
         model.fit_generator(train_generator,
                 steps_per_epoch=200,
-                epochs=10,
+                epochs=15,
                 validation_data=validation_generator,
                 validation_steps=1, callbacks=[checkpointer, tensorboard])
+        model.load_weights("./tmp/new_weights.hdf5")
 
-    make_analysis(test_generator)
+    score = make_analysis(validation_generator)
+    print(f'balanced accuracy score is {score}')
+
+    show_confusion(validation_generator)
