@@ -146,11 +146,11 @@ def make_analysis(generator):
         if prediction != test_y[i]:
             wrong_indices.append(i)
 
-    for index in wrong_indices:
-        plt.imshow((test_X[index]/2+0.5))
-        plt.text(0.05, 0.95, f'I thought this was a {classes[predicted_y[index]]} \n but it was a {classes[test_y[index]]}', fontsize=14,
-        verticalalignment='top', bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
-        plt.show()
+    # for index in wrong_indices:
+    #     plt.imshow((test_X[index]/2+0.5))
+    #     plt.text(0.05, 0.95, f'I thought this was a {classes[predicted_y[index]]} \n but it was a {classes[test_y[index]]}', fontsize=14,
+    #     verticalalignment='top', bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
+    #     plt.show()
 
     return score
 
