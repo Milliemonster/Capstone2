@@ -13,10 +13,12 @@ from keras.preprocessing.image import ImageDataGenerator
 from keras.callbacks import ModelCheckpoint, TensorBoard
 from sklearn.utils import class_weight
 from sklearn.metrics import balanced_accuracy_score
+import matplotlib
+matplotlib.use('agg')
 import matplotlib.pyplot as plt
 from plot_confusion_matrix import plot_confusion_matrix
 from sklearn.metrics import confusion_matrix
-matplotlib.use('agg')
+
 
 def create_model(nb_classes, img_rows, img_cols, img_layers):
     '''assembles CNN model layers
