@@ -18,7 +18,9 @@ matplotlib.use('agg')
 import matplotlib.pyplot as plt
 from plot_confusion_matrix import plot_confusion_matrix
 from sklearn.metrics import confusion_matrix
-
+import datetime
+from keras import backend as K
+K.tensorflow_backend._get_available_gpus()
 
 def create_model(nb_classes, img_rows, img_cols, img_layers):
     '''assembles CNN model layers
@@ -52,9 +54,9 @@ def create_model(nb_classes, img_rows, img_cols, img_layers):
     model.add(Dropout(0.3))
 
     model.add(Flatten())
-    print('Model flattened out to ', model.output_shape)
+    shape = int(model.output_shape[1]*0.8)
 
-    model.add(Dense(8000))
+    model.add(Dense(shape))
     model.add(Activation('relu'))
 
     model.add(Dropout(0.3))
@@ -191,7 +193,8 @@ if __name__ == '__main__':
                   optimizer='adadelta',
                   metrics=['accuracy'])
 
-    checkpointer = ModelCheckpoint(filepath='./tmp/new_weights.hdf5', verbose=1, save_best_only=True)
+    ts = str(datetime.datetime.now().timestamp())
+    checkpointer = ModelCheckpoint(filepath='./tmp/'+ts+'.hdf5', verbose=1, save_best_only=True)
 
     tensorboard = TensorBoard(
                 log_dir='logs/', histogram_freq=0, batch_size=50, write_graph=True, embeddings_freq=0)
@@ -205,11 +208,11 @@ if __name__ == '__main__':
         print("weights loaded")
     elif load.lower() == 'n':
         model.fit_generator(train_generator,
-                steps_per_epoch=200,
+                steps_per_epoch=20,
                 epochs=15,
                 validation_data=validation_generator,
                 validation_steps=1, callbacks=[checkpointer, tensorboard])
-        model.load_weights("./tmp/new_weights.hdf5")
+        model.load_weights('./tmp/'+ts+'.hdf5')
 
     score = make_analysis(validation_generator)
     print(f'balanced accuracy score is {score}')
