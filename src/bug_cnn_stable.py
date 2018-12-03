@@ -181,9 +181,9 @@ def show_confusion(generator):
     plt.show()
 
 if __name__ == '__main__':
-    train_directory = "../images/select/train"
-    test_directory = "../images/select/holdout"
-    validation_directory = "../images/select/validation"
+    train_directory = "../../images/select/train"
+    test_directory = "../../images/select/holdout"
+    validation_directory = "../../images/select/validation"
 
     model = create_model(3, 100, 100, 3)
 
