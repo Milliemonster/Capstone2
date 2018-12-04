@@ -195,7 +195,6 @@ if __name__ == '__main__':
 
     ts = str(datetime.datetime.now().timestamp())
     checkpointer = ModelCheckpoint(filepath='./tmp/'+ts+'.hdf5', verbose=1, save_best_only=True)
-
     tensorboard = TensorBoard(
                 log_dir='logs/', histogram_freq=0, batch_size=50, write_graph=True, embeddings_freq=0)
 
@@ -208,7 +207,7 @@ if __name__ == '__main__':
         print("weights loaded")
     elif load.lower() == 'n':
         model.fit_generator(train_generator,
-                steps_per_epoch=20,
+                steps_per_epoch=200,
                 epochs=15,
                 validation_data=validation_generator,
                 validation_steps=1, callbacks=[checkpointer, tensorboard])
