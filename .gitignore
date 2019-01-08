@@ -1,0 +1,5 @@
+chromedriver
+__pycache__
+logs
+image_dl_code
+.ipynb_checkpoints
