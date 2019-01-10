@@ -17,12 +17,19 @@ from sklearn.metrics import balanced_accuracy_score
 import matplotlib.pyplot as plt
 
 def create_model():
-    nb_classes = 3  # number of output possibilites: [0 - 9] (don't change)
+    '''
+    assembles CNN model layers
+
+    Returns
+    -------
+    model: Keras model
+
+    '''
+    nb_classes = 3
     img_rows, img_cols = 100, 100
     nb_filters = 24
-    pool_size = (3, 3) # decreases image size, and helps to avoid overfitting
-    # convolution kernel size
-    kernel_size = (4, 4) # slides over image to learn features
+    pool_size = (3, 3)
+    kernel_size = (4, 4)
     input_shape = (100, 100, 3)
 
     model = Sequential()
@@ -37,16 +44,16 @@ def create_model():
     model.add(Conv2D(nb_filters, (3, 3), padding='valid'))
     model.add(Activation('relu'))
 
-    model.add(MaxPooling2D(pool_size=pool_size)) # decreases size, helps prevent overfitting
-    model.add(Dropout(0.3)) # zeros out some fraction of inputs, helps prevent overfitting
+    model.add(MaxPooling2D(pool_size=pool_size))
+    model.add(Dropout(0.3))
 
-    model.add(Conv2D(nb_filters, (1, 5), padding='valid')) #2nd conv. layer (keep layer)
+    model.add(Conv2D(nb_filters, (1, 5), padding='valid'))
     model.add(Activation('relu'))
-    model.add(Conv2D(nb_filters, (5, 1), padding='valid')) #2nd conv. layer (keep layer)
+    model.add(Conv2D(nb_filters, (5, 1), padding='valid'))
     model.add(Activation('relu'))
 
-    model.add(MaxPooling2D(pool_size=pool_size)) # decreases size, helps prevent overfitting
-    model.add(Dropout(0.3)) # zeros out some fraction of inputs, helps prevent overfitting
+    model.add(MaxPooling2D(pool_size=pool_size))
+    model.add(Dropout(0.3))
 
     model.add(Flatten())
     print('Model flattened out to ', model.output_shape)
@@ -62,6 +69,21 @@ def create_model():
     return model
 
 def generate_data(train_directory, validation_directory, test_directory):
+'''
+    Creates data generators for train, validation and test data
+    Input strings are paths to image data. Folders should be named with the target.
+
+    Parameters
+    ----------
+    train_directory: str
+    validation_directory: str
+    test_directory: str
+
+    Returns
+    -------
+    train_generator, test_generator, validation_generator: Keras ImageDataGenerators
+    '''
+
     train_datagen = ImageDataGenerator(
         preprocessing_function=preprocess_input,
         shear_range=0.2,
@@ -114,6 +136,18 @@ def generate_data(train_directory, validation_directory, test_directory):
     return train_generator, test_generator, validation_generator
 
 def make_analysis(generator):
+    '''
+    Computes accuracy of model and displays labeled images for incorrect guesses.
+
+    Parameters
+    ----------
+    generator: Keras ImageDataGenerator
+
+    Returns
+    -------
+    score: int
+    '''
+    
     test_X = generator[0][0]
     test_y = generator.classes
 
